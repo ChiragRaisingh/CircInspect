@@ -29,8 +29,9 @@ import time
 import requests
 from server import helpers
 import pennylane as qml
-
-
+import numpy as np
+import importlib
+import importlib.metadata
 
 
 EXEC_SERVER_URL = "http://localhost:5001"
@@ -81,6 +82,8 @@ def create_app(test_config={}):
         if user.get("expires", 0) < time.time():
             return None
         return user
+
+
 
     @app.route("/visualizeCircuit", methods=["POST"])
     def visualize_on_exec_server():
@@ -706,5 +709,22 @@ def create_app(test_config={}):
                 }
             )
         return Response(status=204)
+    
+    def safe_version(pkg):
+        try:
+            return importlib.metadata.version(pkg)
+        except Exception as e:
+            return "unavailable"
+
+    @app.route("/library_version")
+    def version():
+        return jsonify({
+            "pennylane": safe_version("pennylane"),
+            "numpy": safe_version("numpy"),
+            "autograd": safe_version("autograd"),
+            "jax": safe_version("jax"),
+            "torch": safe_version("torch"),
+            "tensorflow": safe_version("tensorflow"),
+        })
 
     return app

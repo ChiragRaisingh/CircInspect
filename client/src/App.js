@@ -18,6 +18,7 @@ import "./App.css";
 import Landing from "./components/Landing";
 import Login from "./components/Login";
 
+
 function App() {
   const noAuth = true
 
@@ -31,8 +32,12 @@ function App() {
     if (noAuth) {
       setAuthToken("NOAUTH")
       setUserEmail("NOAUTH")
-			setPennylaneVersion("0.44.0");
-			setAuth(true);
+
+	  axios.get("/library_version").then(res => {
+		setPennylaneVersion(res.data.pennylane);
+		});
+		
+	  setAuth(true);
       return;
     }
 

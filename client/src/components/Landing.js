@@ -43,9 +43,11 @@ const javascriptDefault = ``;
 * @param {string} authToken - authentication token for currently logged in user. "NOAUTH" if auth is disabled.
 * @param {string} userEmail - email provided by user in login. "NOAUTH" if auth is disabled.
 
+  TODO: should still reflect the true PennyLane version being used and shouldn't default to an arbitrary version number
 * @param {string} pennylaneVersion - pennylane version used by the backend. "0.41.0" is used as a placeholder if auth is disabled.
 */
 
+// TODO: Change these props to use a frameworkVersions dictionary so the user can see all the version of supported frameworks (only when multiple frameworks are supported) 
 
 const Landing = ({authToken, userEmail, pennylaneVersion}) => {
 
@@ -99,18 +101,30 @@ const Landing = ({authToken, userEmail, pennylaneVersion}) => {
 	// States for versions
 	const [circInspectVersion, setCircInspectVersion] = useState("0.1.1")
 	const [showLibraries, setShowLibraries] = useState(false)
+  const [availableLibraries, setAvailableLibraries] = useState([]);
+
 
   // States for data collection policy
   const [showPolicy, setShowPolicy] = useState(true)
   const [policyAccepted, setPolicyAccepted] = useState(false)
 
-	const availableLibraries = [
-		["Numpy", "1.26.2"],
-		["Autograd", "1.6.2"],
-		["Tensorflow", "unavailable"],
-		["PyTorch", "unavailable"],
-		["JAX", "unavailable"]
-	]
+  useEffect(() => {
+    axios.get("/library_version")
+      .then(res => {
+        setAvailableLibraries([
+          ["Numpy", res.data.numpy],
+          ["Autograd", res.data.autograd],
+          ["Tensorflow", "unavailable"],
+          ["PyTorch", "unavailable"],
+          ["JAX", res.data.jax],
+        ]);
+      })
+      .catch(err => console.error("Library version fetch failed:", err));
+  }, []);
+
+
+
+
 
   /**
   * A callback to trigger when user changes modes between real-time and debugger
@@ -202,7 +216,6 @@ const Landing = ({authToken, userEmail, pennylaneVersion}) => {
       'Content-Type': 'application/json'
     }
 		axios.post('/visualizeCircuit', { 
-			"token": authToken,
 			"session_id": sessionID,
       "policy_accepted": policyAccepted,
 			"timestamp": new Date().getTime(),
@@ -708,7 +721,7 @@ const Landing = ({authToken, userEmail, pennylaneVersion}) => {
         </div>
 
 			<div className="w-full px-4 py-2 basis-1/2 flex flex-row-reverse">
-		  <a href="https://ubc.ca1.qualtrics.com/jfe/form/SV_3aAEHg7YUmCJ0WO" target="_blank"><button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-8 rounded ml-4">Give Feedback</button></a>
+		  <a href="https://github.com/QSAR-UBC/CircInspect/issues" target="_blank"><button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-8 rounded ml-4">Give Feedback</button></a>
 				<p className="mx-8">You are currently using CircInspect {circInspectVersion} with Pennylane <a className="text-pink-600" href={"https://github.com/PennyLaneAI/pennylane/releases/tag/v"+pennylaneVersion} target="_blank" rel="noreferrer" >{pennylaneVersion}</a>
 				<br/>
 				See a list of <button className="text-pink-600" onClick={() => setShowLibraries(true)}>available libraries</button>.</p>
@@ -771,20 +784,14 @@ const Landing = ({authToken, userEmail, pennylaneVersion}) => {
 			<Rodal customStyles={{overflow:"auto", padding:"10px", cursor:"default"}}
 					 visible={showPolicy}
            showCloseButton={false}
-					 height={550}
-					 width={800}>
+					 height={350}
+					 width={650}>
 							<h1 className="font-bold text-xl mx-4 mt-2">CircInspect: Integrating Visual Circuit Analysis, Abstraction, and Real-Time Development in Quantum Debugging</h1>
-<div className="m-4">
-							<p className="mb-2 text-justify">Thank you for using CircInspect, our quantum debugging tool. To improve CircInspect and advance research in quantum debugging, we collect anonymous usage data. This includes:</p>
-<ul className="mb-2">
-<li>The debugging features and buttons you interact with</li>
-<li>How you navigate and use CircInspect</li>
-<li>Any errors or unexpected behaviors you encounter</li>
-<li>Code snippets processed through the debugger</li>
-</ul>
-<p className="mb-2 text-justify">This data helps us understand how users engage with the debugger, what they consider to be bugs, and how they approach the debugging process. The collected information is used for both tool improvement and research on quantum debugging methodologies. This is part of a University of British Columbia study. The primary investigator for this project is Professor Olivia Di Matteo from the Department of Electrical and Computer Engineering. The email address of Olivia is olivia@ece.ubc.ca. The email address of the co-investigator, Mushahid Khan, is mkhan103@student.ubc.ca. If you have any concerns or complaints about your rights as a research participant and/or your experiences while participating in this study, contact the Research Participant Complaint Line in the UBC Office of Research Ethics at 604-822-8598 or if long distance e-mail RSIL@ors.ubc.ca or call toll free 1-877-822-8598.</p>
-<p className="mb-2 text-justify">By clicking on “I accept”, you acknowledge and agree to this data collection. We do not collect any personally identifiable information, and all data is used solely for research and development purposes. If you click on “I reject”, then we will not be collecting any data.
-</p> 
+<div className="m-4 mb-6">
+  <p className="mb-2 text-justify">Thank you for using CircInspect, our quantum debugging tool. CircInspect is currently under active development, and this version is being used for internal quality control, feature improvement, and bug fixing.</p>
+  <p className="mb-2 text-justify">Your interactions with the tool may be used to help identify issues, improve functionality, and enhance the overall user experience. This information is used solely for development and debugging purposes within the CircInspect project.</p> 
+  <p className="mb-2 text-justify">By clicking “I accept,” you acknowledge and agree to this use. If you click “I reject,” CircInspect will run without this internal quality improvement logging enabled.</p> 
+
 </div>
 		<div className="mt-4">
 		<button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-8 rounded ml-4" onClick={()=>{setPolicyAccepted(true); setShowPolicy(false)}}>I accept</button>
