@@ -43,11 +43,9 @@ const javascriptDefault = ``;
 * @param {string} authToken - authentication token for currently logged in user. "NOAUTH" if auth is disabled.
 * @param {string} userEmail - email provided by user in login. "NOAUTH" if auth is disabled.
 
-  TODO: should still reflect the true PennyLane version being used and shouldn't default to an arbitrary version number
 * @param {string} pennylaneVersion - pennylane version used by the backend. "0.41.0" is used as a placeholder if auth is disabled.
 */
 
-// TODO: Change these props to use a frameworkVersions dictionary so the user can see all the version of supported frameworks (only when multiple frameworks are supported) 
 
 const Landing = ({authToken, userEmail, pennylaneVersion}) => {
 
