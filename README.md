@@ -24,27 +24,15 @@ You can selectively observe inputs to subroutines and main circuit output by usi
 Use the dropdown menu at any time to switch to “Real-Time Development” mode. CircInspect will dynamically update the quantum circuit visualization as the code is modified.
 ![438026261-c359d720-2c96-455e-a07e-12bd9fb72e9b (1)](https://github.com/user-attachments/assets/9dc1a4de-ad9d-4b28-848d-e88eecc0731f)
 
-
 ## Installation
 
 CircInspect is [freely available online](https://circinspect.ece.ubc.ca/). The instructions below are for local installation.
 
 CircInspect is developed with React for the front-end, while the back-end is powered by Python and Flask. Some UI elements and code editor setup were inspired by the blog "[How to Build a Code Editor with React that Compiles and Executes in 40+ Languages](https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/)", written by [Manu Arora](https://manuarora.in/).  MongoDB is used to track how users interact with the application, specifically to monitor which features they use and how often they engage with different parts of CircInspect.
 
-To install the backend server, go into `CircInspect/server` directory and run
+To install the backend server requirements, go into `CircInspect` directory (project root) and run
 ```
-pip install -r requirements.txt
-```
-The following will be installed:
-```
-pennylane==0.41.0
-flask==3.0.0
-google-api-python-client==2.132.0
-google-auth-oauthlib==1.2.0
-pymongo==4.7.2
-dill==0.3.8
-matplotlib==3.8.2
-requests==2.32.3
+poetry install
 ```
 
 To install the frontend server, install Node.js, go into `CircInspect/client` directory and run
@@ -65,17 +53,18 @@ sudo systemctl start mongod
 sudo systemctl status mongod
 ```
 3. Open three terminal windows
-4. On the first one, go into `CircInspect/client` directory and run
+
+4. On the first one, go into `CircInspect` directory (project root) and run
 ```
-npm start
+poetry run flask --app server.app run --debug
 ```
 5. On the second one, go into `CircInspect` directory (project root) and run
 ```
-flask --app server.app run --debug
+poetry run flask --app execserver.app run --debug --port=5001
 ```
-5. On the third one, go into `CircInspect` directory (project root) and run
+6. On the third one, go into `CircInspect/client` directory and run
 ```
-flask --app execserver.app run --debug --port=5001
+npm start
 ```
 
 ## Configurations
@@ -89,10 +78,8 @@ Follow the instructions in [performance_tests/README.md](performance_tests/READM
 CircInsepct is available open source under the Apache 2.0 License. Contributions are welcome. Please follow the instructions in the following link to contribute: [How to contribute?](https://github.com/QSAR-UBC/CircInspect-dev/blob/main/.github/CONTRIBUTING.md)
 
 ## Reference
-
 The primary developers of CircInspect are Mushahid Khan
-([@mushahidkhan835](https://github.com/mushahidkhan835)) and Cihan Bosnali
-([@CihanBosnali](https://github.com/CihanBosnali)).
+([@mushahidkhan835](https://github.com/mushahidkhan835)) and Cihan Bosnali ([@CihanBosnali](https://github.com/CihanBosnali)).
 
 The authors acknowledge funding from the NSERC CREATE in Quantum Computing
 Program (grant number 543245), NSERC Alliance Quantum, UBC 4YF, and

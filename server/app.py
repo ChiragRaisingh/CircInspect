@@ -29,8 +29,9 @@ import time
 import requests
 from server import helpers
 import pennylane as qml
-
-matplotlib.use("Agg")
+import numpy as np
+import importlib
+import importlib.metadata
 
 
 EXEC_SERVER_URL = "http://localhost:5001"
@@ -81,6 +82,8 @@ def create_app(test_config={}):
         if user.get("expires", 0) < time.time():
             return None
         return user
+
+
 
     @app.route("/visualizeCircuit", methods=["POST"])
     def visualize_on_exec_server():
@@ -140,7 +143,7 @@ def create_app(test_config={}):
                 "TESTMODE", False
             ):
                 return Response(status=401)
-            (commands, annotated_queue) = pickle.loads(bytes.fromhex(body["commands"]))
+            (commands, annotated_queue) = pickle.loads(bytes.fromhex(body["commands"])) 
             device_name = body["device_name"]
             identifier = body["id"]
             num_wires = body["num_wires"]
@@ -308,7 +311,6 @@ def create_app(test_config={}):
                         num_shots,
                         commands[-1].code_line,
                         commands,
-                        real_time=False,
                     )
                 )
                 debug_index = -1
@@ -331,14 +333,13 @@ def create_app(test_config={}):
                         num_shots,
                         commands[-1].code_line,
                         commands,
-                        real_time=False,
                     )
                 )
                 line_number_to_highlight = str(commands[debug_index].line_number)
             if debug_index == -1:
                 debug_index = len(commands)
             exec_time = time.time()
-            circuit_output = helpers.run_pennylane_commands(
+            circuit_output = helpers.run_pennylane_commands( 
                 commands[:-1],
                 device_name,
                 num_wires,
@@ -355,11 +356,11 @@ def create_app(test_config={}):
                     break
 
             process_end_time = time.time()
-            # remove exec times from processing time
+ 
             processing_time = process_end_time - process_start_time
             for n in exec_time_list:
                 processing_time -= n
-            # Send data back to user
+
             return jsonify(
                 {
                     "name": commands[0].function,
@@ -708,5 +709,22 @@ def create_app(test_config={}):
                 }
             )
         return Response(status=204)
+    
+    def safe_version(pkg):
+        try:
+            return importlib.metadata.version(pkg)
+        except Exception as e:
+            return "unavailable"
+
+    @app.route("/library_version")
+    def version():
+        return jsonify({
+            "pennylane": safe_version("pennylane"),
+            "numpy": safe_version("numpy"),
+            "autograd": safe_version("autograd"),
+            "jax": safe_version("jax"),
+            "torch": safe_version("torch"),
+            "tensorflow": safe_version("tensorflow"),
+        })
 
     return app
