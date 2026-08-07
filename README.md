@@ -8,27 +8,39 @@ CircInspect offers adaptive visualization of quantum circuits, enabling you to e
 
 ## How to get started with CircInspect
 
-CircInspect has two different modes: Debugger Mode and Real-Time Development Mode.  With integrated debugger support, Debugger Mode allows for monitoring of structural and behavioural changes at breakpoints. Real-Time Development mode updates the circuit dynamically as you type, providing immediate feedback and deeper insight into how code translates into quantum circuits.
+CircInspect visualizes the structure of your circuit and updates it dynamically as you type, providing immediate feedback and deeper insight into how code translates into quantum circuits, and also includes an integrated debugger for monitoring structural and behavioural changes at breakpoints.
 
 We are researching how quantum developers debug their programs and CircInspect is a part of that effort. If you’re building algorithms with PennyLane, please give it a try and send us your feedback.
 
 
-In Debugger Mode, you can isolate and examine individual quantum circuit components while monitoring changes in program structure and output at breakpoints. To set a breakpoint, select “Debugger Mode” from the dropdown menu in the top left, and click on the line number. You can then click “Start Debugger” and use the buttons to step through your code.
+With the debugger, you can isolate and examine individual quantum circuit components while monitoring changes in program structure and output at breakpoints. To set a breakpoint, click on the line number. You can then click “Start Debugger” and use the buttons to step through your code.
 
-![437292476-f0a810a5-0d6d-4157-91c9-89afb6f5c2f7](https://github.com/user-attachments/assets/337c5b5f-41f9-471a-a283-1ac99a3b530b)
+<img width="1918" height="926" alt="image" src="https://github.com/user-attachments/assets/8fee62e4-3cd3-4aa8-be69-05b62f2cb7db" />
 
-You can selectively observe inputs to subroutines and main circuit output by using the tree structure of function calls under the circuit visualization. Click on the function name, shown by the red box, to create a pop up with additional information. 
-![437292666-a9b8a75f-2477-4e5e-90a0-bac401294cd5](https://github.com/user-attachments/assets/3fe1a8b8-e1f3-432c-8c35-fb2c02c4328a)
-![437292750-6a9d0660-257e-457e-b395-c62a6b6c428a](https://github.com/user-attachments/assets/f3c3299f-35b6-414f-9b13-2cc94fbac3cc)
 
-Use the dropdown menu at any time to switch to “Real-Time Development” mode. CircInspect will dynamically update the quantum circuit visualization as the code is modified.
-![438026261-c359d720-2c96-455e-a07e-12bd9fb72e9b (1)](https://github.com/user-attachments/assets/9dc1a4de-ad9d-4b28-848d-e88eecc0731f)
+You can selectively observe inputs to subroutines and main circuit output by using the tree structure of commands under the circuit visualization. Click on the full screen button and click on one of the nodes to create a pop up with additional information. To see the output of the qnode, click on the top-most node of the command tree structure to see the output in the side panel popup, alternatively, you can hover over the same top-most node. 
+<img width="1918" height="926" alt="image" src="https://github.com/user-attachments/assets/9ac50b88-1d7e-44d8-a4ad-239c2a9799af" />
+<img width="1918" height="926" alt="image" src="https://github.com/user-attachments/assets/3ecee8f1-63cb-4ef2-9e5f-e8fe59fca10b" />
+
+
+When using mid-circuit measurements, you can choose a postselect value for each mid-circuit measurement while the deugger is inactive. This will allow you to simulate the effect of postselection on the output of the circuit. To do so, click the fullscreen button on the command tree structure and click on the mid-circuit measurement node you want to apply a postselection value to. 
+<img width="1918" height="926" alt="PostSelectionDemo" src="https://github.com/user-attachments/assets/8f191fe4-fca4-474d-8ce1-84bf0eecead7" />
+
+
+
+
+CircInspect will dynamically update the quantum circuit visualization as the code is modified, even while a debugging session isn't active.
+<img width="1918" height="926" alt="LiveDemo" src="https://github.com/user-attachments/assets/1971edea-e77c-42aa-a750-d331c0857815" />
+
+
+
+
 
 ## Installation
 
 CircInspect is [freely available online](https://circinspect.ece.ubc.ca/). The instructions below are for local installation.
 
-CircInspect is developed with React for the front-end, while the back-end is powered by Python and Flask. Some UI elements and code editor setup were inspired by the blog "[How to Build a Code Editor with React that Compiles and Executes in 40+ Languages](https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/)", written by [Manu Arora](https://manuarora.in/).  MongoDB is used to track how users interact with the application, specifically to monitor which features they use and how often they engage with different parts of CircInspect.
+CircInspect is developed with React for the front-end, while the back-end is powered by Python, Flask and Docker. Some UI elements and code editor setup were inspired by the blog "[How to Build a Code Editor with React that Compiles and Executes in 40+ Languages](https://www.freecodecamp.org/news/how-to-build-react-based-code-editor/)", written by [Manu Arora](https://manuarora.in/).  MongoDB is used to track how users interact with the application, specifically to monitor which features they use and how often they engage with different parts of CircInspect.
 
 To install the backend server requirements, go into `CircInspect` directory (project root) and run
 ```
@@ -41,6 +53,12 @@ npm i
 ```
 
 To install the database, follow the instructions in the [MongoDB website](https://www.mongodb.com/docs/manual/administration/install-community/).
+To install docker, follow the instructions in the [Docker website](https://docs.docker.com/engine/install/).
+
+Once docker is installed, build the docker image by navigating to the `CircInspect` directory (project root) and run 
+```
+docker build -t circinspect-sandbox -f server/sandbox/Dockerfile .
+```
 
 ## Usage
 To run the development servers:
@@ -52,17 +70,13 @@ sudo systemctl start mongod
 ```
 sudo systemctl status mongod
 ```
-3. Open three terminal windows
+3. Open two terminals terminal windows
 
 4. On the first one, go into `CircInspect` directory (project root) and run
 ```
-poetry run flask --app server.app run --debug
+poetry run flask --app server.container_manager run --debug
 ```
-5. On the second one, go into `CircInspect` directory (project root) and run
-```
-poetry run flask --app execserver.app run --debug --port=5001
-```
-6. On the third one, go into `CircInspect/client` directory and run
+5. On the second one, go into `CircInspect/client` directory and run
 ```
 npm start
 ```
@@ -79,7 +93,7 @@ CircInsepct is available open source under the Apache 2.0 License. Contributions
 
 ## Reference
 The primary developers of CircInspect are Mushahid Khan
-([@mushahidkhan835](https://github.com/mushahidkhan835)) and Cihan Bosnali ([@CihanBosnali](https://github.com/CihanBosnali)).
+([@mushahidkhan835](https://github.com/mushahidkhan835)), Chirag Raisingh ([@ChiragRaisingh](https://github.com/ChiragRaisingh)) and Cihan Bosnali ([@CihanBosnali](https://github.com/CihanBosnali)).
 
 The authors acknowledge funding from the NSERC CREATE in Quantum Computing
 Program (grant number 543245), NSERC Alliance Quantum, UBC 4YF, and

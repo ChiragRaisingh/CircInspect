@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,21 +33,21 @@ def depth_test_generator(num_qubits, depth):
 depth = """
         + str(depth)
         + """
-import pennylane as qml
+import pennylane as qp
 import numpy as np
 import random
 from functools import partial
-dev = qml.device('default.qubit', wires=wires)
+dev = qp.device('default.qubit', wires=wires)
 
 def add_gates(i):
-     qml.IsingYY(random.uniform(0,1) * 3.14, [i,i+1])
+     qp.IsingYY(random.uniform(0,1) * 3.14, [i,i+1])
 
-@qml.qnode(dev)
+@qp.qnode(dev)
 def circuit(iters):
   for _ in range(iters):
     for i in range(wires - 1):
       add_gates(i)
-  return qml.expval(qml.Z(0))
+  return qp.expval(qp.Z(0))
 
 circuit(depth)
 """

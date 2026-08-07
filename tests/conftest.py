@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
 """ This module has the fixtures to configure pytest to work with flask """
 
 import pytest
-from server.app import create_app
+import requests
+from server.container_manager import create_app
+
+CONTAINER_MANAGER_URL = "http://localhost:5000"
 
 
 @pytest.fixture
@@ -35,3 +38,18 @@ def client(app):
 def runner(app):
     """flask CLI runner for running tests on command-line with more options"""
     return app.test_cli_runner()
+
+@pytest.fixture(scope="module")
+def sandbox_port(request):
+    session_id = f"TEST_{request.module.__name__}"
+    res = requests.post(
+        f"{CONTAINER_MANAGER_URL}/dc/sessionEnter",
+        json={"session_id": session_id},
+    )
+    body = res.json()
+    assert "port" in body, f"sessionEnter failed for {session_id}: {body}"
+    yield body["port"]
+    requests.post(
+        f"{CONTAINER_MANAGER_URL}/dc/sessionExit",
+        json={"session_id": session_id},
+    )

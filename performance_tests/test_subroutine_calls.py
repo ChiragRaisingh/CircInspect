@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,17 +26,17 @@ MAX_CALLS = 200
 
 def test_generator(num_calls):
     code = """
-import pennylane as qml
+import pennylane as qp
 def a():
-    qml.Hadamard(wires=0)
-dev = qml.device("default.qubit", wires=1)
-@qml.qnode(dev)
+    qp.Hadamard(wires=0)
+dev = qp.device("default.qubit", wires=1)
+@qp.qnode(dev)
 def circuit():"""
     for _ in range(num_calls):
         code += """
     a()"""
     code += """
-    return qml.probs()
+    return qp.probs()
 circuit()
 """
     return code

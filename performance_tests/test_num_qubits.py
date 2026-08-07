@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,22 +34,22 @@ depth = """
         + str(depth)
         + """
 
-import pennylane as qml
+import pennylane as qp
 import numpy as np
 import random
 
 def add_gates(i):
-     qml.IsingYY(random.uniform(0,1) * 3.14, [i,i+1])
+     qp.IsingYY(random.uniform(0,1) * 3.14, [i,i+1])
 
-dev = qml.device('default.qubit', wires=num_qubits)
-@qml.qnode(dev)
+dev = qp.device('default.qubit', wires=num_qubits)
+@qp.qnode(dev)
 def circuit(num_qubits,depth):
     for _ in range(depth):
         j = 0
         while j < num_qubits - 1:
             add_gates(j)
             j += 2
-    return qml.expval(qml.Z(0))
+    return qp.expval(qp.Z(0))
 circuit(num_qubits,depth)"""
     )
 

@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,26 +20,26 @@ instead of running user code that can break the code execution server.
 from tests.functions4testing import visCircuit
 
 
-def run_hack_test(client, user_code_file):
+def run_hack_test(client, user_code_file, sandbox_port):
     with open(user_code_file, "r") as f:
-        assert visCircuit(client, f.read()).get("error", None) is not None
+        assert visCircuit(client, f.read(), sandbox_port).get("error", None) is not None
 
 
-def test_memory_fill_hack_1(client):
-    run_hack_test(client, "test_cases/memory_fill_hack_1.txt")
+def test_memory_fill_hack_1(client, sandbox_port):
+    run_hack_test(client, "test_cases/memory_fill_hack_1.txt", sandbox_port)
 
 
-def test_memory_fill_hack_2(client):
-    run_hack_test(client, "test_cases/memory_fill_hack_2.txt")
+def test_memory_fill_hack_2(client, sandbox_port):
+    run_hack_test(client, "test_cases/memory_fill_hack_2.txt", sandbox_port)
 
 
-def test_infinite_loop_hack_1(client):
-    run_hack_test(client, "test_cases/infinite_loop_hack_1.txt")
+def test_infinite_loop_hack_1(client, sandbox_port):
+    run_hack_test(client, "test_cases/infinite_loop_hack_1.txt", sandbox_port)
 
 
-def test_infinite_loop_hack_2(client):
-    run_hack_test(client, "test_cases/infinite_loop_hack_2.txt")
+def test_infinite_loop_hack_2(client, sandbox_port):
+    run_hack_test(client, "test_cases/infinite_loop_hack_2.txt", sandbox_port)
 
 
-def test_heavy_processing_hack(client):
-    run_hack_test(client, "test_cases/heavy_processing_hack.txt")
+def test_heavy_processing_hack(client, sandbox_port):
+    run_hack_test(client, "test_cases/heavy_processing_hack.txt", sandbox_port)

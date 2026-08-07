@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -244,7 +244,10 @@ def main():
     parser.add_argument("-o", "--output", help="specify an output file to write admin data")
     parser.add_argument("-s", "--session", help="specify a session id")
     parser.add_argument(
-        "-c", "--count", action="store_true", help="specify whether to count API calls or not"
+        "-c",
+        "--count",
+        action="store_true",
+        help="specify whether to count API calls or not",
     )
     parser.add_argument("-cl", "--countlike", help="specify an API call name to count")
     args = parser.parse_args()

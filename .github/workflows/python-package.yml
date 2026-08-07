@@ -1,0 +1,90 @@
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python package
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    # tests/conftest.py's `sandbox_port` fixture talks to a real MongoDB
+    # instance via server.container_manager, so the suite needs one on
+    # localhost:27017 -- same as local dev (see README.md's MongoDB step).
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ping: 1})'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.14
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip poetry
+          poetry --version
+          poetry install
+
+#      TODO: update this later with project-specific commands
+#      - name: Check linting and formatting with ruff
+#        run: |
+#          poetry run ruff check ionizer/*.py tests/*.py
+
+      # tests/README.md's "Running Tests" steps 1-2, reproduced here: build
+      # the sandbox image the same way local dev does (see README.md), then
+      # start the container manager server the tests talk to over HTTP.
+      - name: Build sandbox Docker image
+        run: docker build -t circinspect-sandbox -f server/sandbox/Dockerfile .
+
+      - name: Start CircInspect server
+        run: |
+          poetry run flask --app server.container_manager run &
+          echo $! > server.pid
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:5000/library_version > /dev/null; then
+              echo "Server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Server did not become ready in time" >&2
+          exit 1
+
+      - name: Test with pytest
+        working-directory: tests
+        run: |
+          poetry run pytest
+
+      - name: Stop CircInspect server
+        if: always()
+        run: |
+          [ -f server.pid ] && kill "$(cat server.pid)" || true

@@ -1,4 +1,4 @@
-// Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+// Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import Login from "./components/Login";
 
 
 function App() {
-  const noAuth = true
+	const noAuth = true
 
 	const [auth, setAuth] = useState(false);
 	const [authToken, setAuthToken] = useState(null);
@@ -29,17 +29,17 @@ function App() {
 	const [pennylaneVersion, setPennylaneVersion] = useState("unknown");
 
 	useEffect(() => {
-    if (noAuth) {
-      setAuthToken("NOAUTH")
-      setUserEmail("NOAUTH")
+		if (noAuth) {
+			setAuthToken("NOAUTH")
+			setUserEmail("NOAUTH")
 
-	  axios.get("/library_version").then(res => {
-		setPennylaneVersion(res.data.pennylane);
-		});
-		
-	  setAuth(true);
-      return;
-    }
+			axios.get("/library_version").then(res => {
+				setPennylaneVersion(res.data.pennylane);
+			});
+
+			setAuth(true);
+			return;
+		}
 
 		// check if a new token is given by query string
 		let token = window.location.search.substring(1)
@@ -50,11 +50,11 @@ function App() {
 				?.split("=")[1];
 			if (token == undefined || token == null) token = "";
 		}
-		if (token !== "") {	
+		if (token !== "") {
 			axios.post('/auth/verify',
 				{
 					"token": token
-				}, {headers: {'Content-Type': 'application/json'}}
+				}, { headers: { 'Content-Type': 'application/json' } }
 			).then(res => {
 				if (res.status === 200) {
 					setUserEmail(res.data.email);
@@ -71,14 +71,14 @@ function App() {
 				document.cookie = "token=";
 			});
 		}
-	}, []);	
+	}, []);
 
-  if (noAuth) {
-    return <Landing authToken={authToken} userEmail={userEmail} pennylaneVersion={pennylaneVersion}/>
-  }
+	if (noAuth) {
+		return <Landing authToken={authToken} userEmail={userEmail} pennylaneVersion={pennylaneVersion} />
+	}
 
 
-	return (auth ? <Landing authToken={authToken} userEmail={userEmail} pennylaneVersion={pennylaneVersion}/> : <Login failed={failedAuth}/>);
+	return (auth ? <Landing authToken={authToken} userEmail={userEmail} pennylaneVersion={pennylaneVersion} /> : <Login failed={failedAuth} />);
 }
 
 export default App;

@@ -1,4 +1,4 @@
-// Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+// Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import { ModeOptions } from "../constants/ModeOptions";
 const ModeDropdown = ({ onSelectChange }) => {
   return (
     <Select
-    className="text-xs"
+      className="text-xs"
       placeholder={`Filter By Category`}
       options={ModeOptions}
       defaultValue={ModeOptions[0]}

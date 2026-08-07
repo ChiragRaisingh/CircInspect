@@ -1,4 +1,4 @@
-# Copyright 2025 UBC Quantum Software and Algorithms Research Lab
+# Copyright 2026 UBC Quantum Software and Algorithms Research Lab
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,15 +26,15 @@ MAX_LINES = 200
 
 def test_generator(num_lines):
     code = """
-import pennylane as qml
-dev = qml.device("default.qubit", wires=1)
-@qml.qnode(dev)
+import pennylane as qp
+dev = qp.device("default.qubit", wires=1)
+@qp.qnode(dev)
 def circuit():"""
     for _ in range(num_lines - 6):  # -6 for 6 lines that are required to be in the code
         code += """
-    qml.Hadamard(wires=0)"""
+    qp.Hadamard(wires=0)"""
     code += """
-    return qml.probs()
+    return qp.probs()
 circuit()
 """
     return code
